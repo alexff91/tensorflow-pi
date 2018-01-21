@@ -1,3 +1,4 @@
+from numpy.ma import array
 from skimage import transform
 import cv2
 import os
@@ -55,7 +56,7 @@ def load_frames(videofile, name, tstart, save='yes'):
 
 if __name__ == '__main__':
     ### Video 1 - a compilation
-    download_youtube('https://youtu.be/k5KkEznW3tc', 'comp1')
+    download_youtube('https://youtu.be/TN-VJkUJRBA', 'comp4')
     ###tstart  = array of start times, converted from minutes to seconds
     tstart = array(
         [6, 44, 1 * 60 + 17, 1 * 60 + 36, 1 * 60 + 59, 2 * 60 + 19, 2 * 60 + 51, 3 * 60 + 54, 4 * 60 + 11, 4 * 60 + 26,

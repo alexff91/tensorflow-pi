@@ -10,7 +10,10 @@ import numpy
 import skimage
 import sklearn
 from keras.callbacks import ModelCheckpoint
+from matplotlib.pyplot import hist, xlabel, ylabel
 from sklearn.model_selection import train_test_split  ### import sklearn tool
+
+
 #
 # rcdefaults()  ### set the defaults
 # matplotlib.rc('font', family='Bitstream Vera Serif')  ### I like my plots to look a certain way :)
@@ -87,10 +90,10 @@ img_filepath = '/pathway/to/videos'  #### the filepath for the training video se
 neg_all = glob.glob(img_filepath + 'negative/*.mp4')  #### negative examples - ACCV
 pos_2 = glob.glob(img_filepath + 'positive/*.mp4')  #### positive examples - ACCV
 pos_1 = glob.glob(img_filepath + '../YTpickles/*.pkl')  #### positive examples - youtube
-pos_all = concatenate((pos_1, pos_2))
+pos_all = numpy.concatenate((pos_1, pos_2))
 
-all_files = concatenate((pos_all, neg_all))
-print len(neg_all), len(pos_all)  #### print check
+all_files = numpy.concatenate((pos_all, neg_all))
+print(len(neg_all), len(pos_all))  #### print check
 
 
 def label_matrix(values):
@@ -115,7 +118,7 @@ labels = label_matrix(labels)  ### make the labels into a matrix for the HRNN tr
 def make_dataset(rand):
     seq1 = numpy.zeros((len(rand), 99, 144, 256))  ### create an empty array to take in the data
     for i, fi in enumerate(rand):  ### for each file...
-        print (i, fi)  ### as we go through, print out each one
+        print(i, fi)  ### as we go through, print out each one
         if fi[-4:] == '.mp4':
             t = load_set(fi)  ### load in the video file using previously defined function if .mp4 file
         elif fi[-4:] == '.pkl':
@@ -125,7 +128,7 @@ def make_dataset(rand):
         else:  # TypeError:
             'Image has shape ', shape(t), 'but needs to be shape', shape(seq1[0])  ### if exception is raised, explain
             pass  ### continue loading data
-    print (shape(seq1))
+    print(shape(seq1))
     return seq1
 
 
@@ -139,15 +142,15 @@ def make_dataset(rand):
 
 ##### split data into training and validation (sets and shuffle)
 x_train, x_t1, y_train, y_t1 = train_test_split(all_files, labels, test_size=0.40, random_state=0)  ### split
-x_train = array(x_train);
-y_train = array(y_train)  ### need to be arrays
+x_train = numpy.array(x_train);
+y_train = numpy.array(y_train)  ### need to be arrays
 
-x_testA = array(x_t1[len(x_t1) / 2:]);
-y_testA = array(y_t1[len(y_t1) / 2:])  #### test set
+x_testA = numpy.array(x_t1[len(x_t1) / 2:]);
+y_testA = numpy.array(y_t1[len(y_t1) / 2:])  #### test set
 
 ### valid set for model
-x_testB = array(x_t1[:len(x_t1) / 2]);
-y_testB = array(y_t1[:len(y_t1) / 2])  ### need to be arrays
+x_testB = numpy.array(x_t1[:len(x_t1) / 2]);
+y_testB = numpy.array(y_t1[:len(y_t1) / 2])  ### need to be arrays
 x_test = make_dataset(x_testB)
 
 # Below, a test was run to check whether there is signal above the noise -- fake data was
@@ -267,8 +270,8 @@ model.compile(loss='binary_crossentropy', optimizer='Nadam', metrics=['accuracy'
 ### make the holdout test dataset for prediction and comparison
 x_holdout = make_dataset(x_testA)
 
-plot([0, 1], [0, 1], 'k:',
-     alpha=0.5)  ### plot the "by chance" line - the goal is to achieve better than random accuracy
+cv2.plot([0, 1], [0, 1], 'k:',
+         alpha=0.5)  ### plot the "by chance" line - the goal is to achieve better than random accuracy
 ys = [y_train, y_testB, y_testA]  ### set up labels to be iterated through
 labs = ['Train', 'Valid', 'Test']  ### set up tags to be iterated through
 col = ['#4881ea', 'darkgreen', 'maroon']  ### set up colors to be iterated through
@@ -289,12 +292,16 @@ for i, xset in enumerate([x_train, x_testB, x_testA]):  ### iterate through each
     plot(fpr, tpr, '-', color=col[i], alpha=0.7, lw=1.5,
          label=labs[i])  ### plot the ROC curve with false pos rate and true pos rate
 
-    print labs[i]
-    print sklearn.metrics.auc(fpr, tpr)  ### print area under curve for each set
-    print sklearn.metrics.accuracy_score(ys[i][:, 1],
-                                         [round(j) for j in new_pred[:, 1]])  ### print accuracy for each set
-    print sklearn.metrics.confusion_matrix(ys[i][:, 1],
-                                           [round(j) for j in new_pred[:, 1]])  ### print confusion matrix for each
+    print
+    labs[i]
+    print
+    sklearn.metrics.auc(fpr, tpr)  ### print area under curve for each set
+    print
+    sklearn.metrics.accuracy_score(ys[i][:, 1],
+                                   [round(j) for j in new_pred[:, 1]])  ### print accuracy for each set
+    print
+    sklearn.metrics.confusion_matrix(ys[i][:, 1],
+                                     [round(j) for j in new_pred[:, 1]])  ### print confusion matrix for each
 
 xlabel('False Positive Rate')
 ylabel('True Positive Rate')
@@ -304,9 +311,9 @@ plt.show()
 #### Examine probability range of predictions
 
 
-plot([0, 1], [0, 1], 'k:', alpha=0.5)  ### plot the "by chance" line - trying so hard to be better than this...
+cv2.plot([0, 1], [0, 1], 'k:', alpha=0.5)  ### plot the "by chance" line - trying so hard to be better than this...
 for i, p in enumerate(preds):  ### for each of the calculated predictions, make a histogram
-    hist(p[:, 1], bins=arange(0, 1, 0.05), histtype='stepfilled', color=col[i], alpha=0.7, label=labs[i]
+    hist(p[:, 1], bins=numpy.arange(0, 1, 0.05), histtype='stepfilled', color=col[i], alpha=0.7, label=labs[i])
     xlabel('False Positive Rate')
     ylabel('True Positive Rate')
     plt.legend(fancybox=True, loc=2, prop={'size': 10})
