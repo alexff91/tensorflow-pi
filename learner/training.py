@@ -86,7 +86,7 @@ def load_set(videofile):
 # (some data is also set aside/not included for testing later)
 
 
-img_filepath = '/pathway/to/videos'  #### the filepath for the training video set
+img_filepath = '../downloader'  #### the filepath for the training video set
 neg_all = glob.glob(img_filepath + 'negative/*.mp4')  #### negative examples - ACCV
 pos_2 = glob.glob(img_filepath + 'positive/*.mp4')  #### positive examples - ACCV
 pos_1 = glob.glob(img_filepath + '../YTpickles/*.pkl')  #### positive examples - youtube
@@ -292,16 +292,12 @@ for i, xset in enumerate([x_train, x_testB, x_testA]):  ### iterate through each
     plot(fpr, tpr, '-', color=col[i], alpha=0.7, lw=1.5,
          label=labs[i])  ### plot the ROC curve with false pos rate and true pos rate
 
-    print
-    labs[i]
-    print
-    sklearn.metrics.auc(fpr, tpr)  ### print area under curve for each set
-    print
-    sklearn.metrics.accuracy_score(ys[i][:, 1],
-                                   [round(j) for j in new_pred[:, 1]])  ### print accuracy for each set
-    print
-    sklearn.metrics.confusion_matrix(ys[i][:, 1],
-                                     [round(j) for j in new_pred[:, 1]])  ### print confusion matrix for each
+    print(labs[i])
+    print(sklearn.metrics.auc(fpr, tpr))  ### print area under curve for each set
+    print(sklearn.metrics.accuracy_score(ys[i][:, 1],
+                                   [round(j) for j in new_pred[:, 1]]))  ### print accuracy for each set
+    print(sklearn.metrics.confusion_matrix(ys[i][:, 1],
+                                     [round(j) for j in new_pred[:, 1]])) ### print confusion matrix for each
 
 xlabel('False Positive Rate')
 ylabel('True Positive Rate')
